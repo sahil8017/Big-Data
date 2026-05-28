@@ -1,0 +1,114 @@
+Step 1: Start Hadoop
+start-dfs.sh
+start-yarn.sh
+
+Check services:
+
+jps
+Step 2: Start MySQL
+sudo systemctl start mysql
+
+Login:
+
+mysql -u root -p
+Step 3: Create Database and Table
+
+Inside MySQL:
+
+CREATE DATABASE sales_db;
+
+USE sales_db;
+
+CREATE TABLE orders (
+order_id INT,
+product_id INT,
+amount INT
+);
+Step 4: Insert Data
+INSERT INTO orders VALUES
+(1,101,500),
+(2,101,300),
+(3,102,700),
+(4,103,400),
+(5,102,200);
+
+Check data:
+
+SELECT * FROM orders;
+
+Exit:
+
+EXIT;
+Step 5: Verify Sqoop
+sqoop version
+Step 6: Import MySQL Table into HDFS
+sqoop import \
+--connect jdbc:mysql://localhost/sales_db \
+--username root \
+--password YOUR_PASSWORD \
+--table orders \
+--target-dir /user/sahilgupta/orders_data \
+--num-mappers 1
+
+Replace:
+
+YOUR_PASSWORD
+
+with your MySQL password.
+
+Step 7: Verify Imported Data
+hdfs dfs -ls /user/sahilgupta/orders_data
+
+Display data:
+
+hdfs dfs -cat /user/sahilgupta/orders_data/part-m-00000
+Step 8: Import Directly into Hive
+sqoop import \
+--connect jdbc:mysql://localhost/sales_db \
+--username root \
+--password YOUR_PASSWORD \
+--table orders \
+--hive-import \
+--create-hive-table \
+--hive-table orders_hive \
+--num-mappers 1
+Step 9: Open Hive
+hive
+Step 10: Data Analysis Queries
+Show Data
+SELECT * FROM orders_hive;
+Total Sales per Product
+SELECT product_id,
+SUM(amount) AS total_sales
+FROM orders_hive
+GROUP BY product_id;
+Average Sales
+SELECT AVG(amount)
+FROM orders_hive;
+Highest Sale
+SELECT MAX(amount)
+FROM orders_hive;
+Product-wise Count
+SELECT product_id,
+COUNT(*) AS total_orders
+FROM orders_hive
+GROUP BY product_id;
+Step 11: Export Data Back to MySQL (Optional)
+sqoop export \
+--connect jdbc:mysql://localhost/sales_db \
+--username root \
+--password YOUR_PASSWORD \
+--table orders \
+--export-dir /user/hive/warehouse/orders_hive
+Expected Output Example
+product_id  total_sales
+101         800
+102         900
+103         400
+Files Used
+MySQL Table
+sales_db.orders
+HDFS Path
+/user/sahilgupta/orders_data
+Hive Table
+orders_hive

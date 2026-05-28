@@ -1,0 +1,60 @@
+Create emp2.txt
+101,Amit,HR,35000,25
+102,Neha,IT,50000,28
+103,Raj,IT,45000,30
+104,Priya,Finance,40000,27
+105,Karan,HR,30000,26
+
+Save as:
+
+emp2.txt
+Hive Commands for Practical 13
+Step 1: Open Hive
+hive
+Step 2: Use Database
+USE company_db;
+Step 3: Create Table
+CREATE TABLE employee (
+emp_id INT,
+emp_name STRING,
+department STRING,
+salary DOUBLE,
+age INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+Step 4: Load Data
+LOAD DATA LOCAL INPATH '/home/sahilgupta/emp2.txt'
+INTO TABLE employee;
+Required Queries
+1. SELECT All Fields
+SELECT * FROM employee;
+2. WHERE Condition
+SELECT *
+FROM employee
+WHERE salary > 30000;
+3. GROUP BY Department
+SELECT department,
+AVG(salary) AS avg_salary
+FROM employee
+GROUP BY department;
+4. HAVING Clause
+SELECT department,
+AVG(salary) AS avg_salary
+FROM employee
+GROUP BY department
+HAVING AVG(salary) > 40000;
+5. ORDER BY Employee Number
+SELECT *
+FROM employee
+ORDER BY emp_id;
+Optional Extra Queries
+Count Employees
+SELECT COUNT(*) FROM employee;
+Maximum Salary
+SELECT MAX(salary) FROM employee;
+Department Wise Count
+SELECT department,
+COUNT(*) AS total
+FROM employee
+GROUP BY department;
