@@ -1,0 +1,10 @@
+pwd
+ls
+cd ..
+mkdir test
+rmdir test
+nano file1.txt
+cat file1.txt
+whoami
+hadoop version
+jps
